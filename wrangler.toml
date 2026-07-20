@@ -10,7 +10,7 @@ binding = "ASSETS"
 binding = "DB"
 database_name = "journal"
 # Replace after `wrangler d1 create journal` (any value works for local dev):
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "2e4c5daf-652e-4b3f-b14a-fbc8e07bfd0b"
 migrations_dir = "migrations"
 
 # Secrets (set via `wrangler secret put`, never committed):
