@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Journal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Roboto+Flex:opsz,wght@8..144,300..700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <!-- auth screen -->
+  <section id="auth" class="auth hidden">
+    <div class="auth-box">
+      <h1>Journal</h1>
+      <p class="muted">A log you write by talking to Claude.</p>
+      <form id="auth-form">
+        <input id="email" type="email" placeholder="email" autocomplete="email" required />
+        <input id="password" type="password" placeholder="password (min 8 chars)" autocomplete="current-password" minlength="8" required />
+        <button type="submit" id="auth-submit">Log in</button>
+      </form>
+      <p class="auth-toggle muted">
+        <span id="auth-toggle-label">No account?</span>
+        <a href="#" id="auth-toggle-link">Sign up</a>
+      </p>
+      <p id="auth-error" class="error hidden"></p>
+    </div>
+  </section>
+
+  <!-- journal screen -->
+  <section id="app" class="app hidden">
+    <header>
+      <h1>Journal</h1>
+      <nav>
+        <span id="stats-line" class="muted mono"></span>
+        <a href="#" id="settings-link">connect</a>
+        <a href="#" id="logout-link">log out</a>
+      </nav>
+    </header>
+
+    <div class="controls">
+      <input id="search" type="search" placeholder="search entries…" />
+      <div id="tag-bar" class="tag-bar"></div>
+    </div>
+
+    <main id="feed"></main>
+    <p id="empty" class="muted hidden">
+      No entries yet. Connect this journal to Claude (see “connect”) and say “log this”.
+    </p>
+    <button id="load-more" class="hidden">load more</button>
+  </section>
+
+  <!-- settings / connector modal -->
+  <dialog id="settings">
+    <h2>Connect to Claude</h2>
+    <ol>
+      <li>Open Claude → Settings → Connectors → <em>Add custom connector</em></li>
+      <li>URL: <code id="mcp-url" class="mono"></code></li>
+      <li>Auth: Bearer token below</li>
+    </ol>
+    <label class="muted">Your MCP token (keep it secret)</label>
+    <div class="token-row">
+      <code id="mcp-token" class="mono"></code>
+      <button id="token-copy" class="hidden">copy</button>
+      <button id="token-rotate">rotate token</button>
+    </div>
+    <p class="muted small" id="token-note">
+      Tokens are stored hashed — shown only once, at signup or rotation. Rotating kills the old
+      token immediately.
+    </p>
+    <p class="muted small">
+      Then in any chat: “log this: …” — the entry lands here.
+    </p>
+    <button id="settings-close">close</button>
+  </dialog>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "journal",
+  "version": "2.0.0",
+  "description": "Personal journal: MCP server + web viewer on Cloudflare Workers + D1. Talk to Claude, entries land here.",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
