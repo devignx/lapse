@@ -1,4 +1,5 @@
 import * as store from "./lib/db.js";
+import * as oauth from "./lib/oauth.js";
 import { handleMcp } from "./lib/mcp.js";
 import {
   createSessionCookieValue,
@@ -29,12 +30,29 @@ export default {
     const { pathname } = url;
     const method = request.method;
 
-    // ---------- MCP (bearer token) ----------
+    // ---------- OAuth (claude.ai connectors authenticate this way) ----------
+    if (pathname.startsWith("/.well-known/oauth-authorization-server") && method === "GET")
+      return oauth.authServerMetadata(url.origin);
+    if (pathname.startsWith("/.well-known/oauth-protected-resource") && method === "GET")
+      return oauth.protectedResourceMetadata(url.origin);
+    if (pathname === "/register" && method === "POST") return oauth.register(request, env.DB);
+    if (pathname === "/authorize" && method === "GET")
+      return oauth.authorizeGet(request, env.DB, url);
+    if (pathname === "/authorize" && method === "POST")
+      return oauth.authorizePost(request, env.DB);
+    if (pathname === "/token" && method === "POST") return oauth.token(request, env.DB);
+
+    // ---------- MCP (bearer: OAuth access token OR personal jrnl_ token) ----------
     if (pathname === "/mcp") {
       if (method !== "POST") return json({ error: "method_not_allowed" }, 405);
       const auth = request.headers.get("Authorization") || "";
-      const token = auth.startsWith("Bearer ") ? auth.slice(7) : null;
-      const user = token && (await store.getUserByToken(env.DB, token));
+      const bearer = auth.startsWith("Bearer ") ? auth.slice(7) : null;
+      let user = null;
+      if (bearer) {
+        user = bearer.startsWith("jat_")
+          ? await oauth.getUserByAccessToken(env.DB, bearer)
+          : await store.getUserByToken(env.DB, bearer);
+      }
       if (!user) {
         return json(
           {
@@ -42,7 +60,10 @@ export default {
             error: { code: -32001, message: "Unauthorized: invalid or missing bearer token" },
             id: null,
           },
-          401
+          401,
+          {
+            "WWW-Authenticate": `Bearer resource_metadata="${url.origin}/.well-known/oauth-protected-resource"`,
+          }
         );
       }
       return handleMcp(request, env.DB, user.id);

@@ -12,7 +12,10 @@ You chat with Claude ──MCP (bearer token)──▶ Cloudflare Worker ──�
 You read your journal ──email/password login────────┘  (same Worker serves the site)
 ```
 
-- **MCP** at `POST /mcp` — 13 tools: `add_entry`, `get_entry`, `update_entry`, `delete_entry`, `get_recent`, `get_by_date_range`, `search_entries`, `get_by_tag`, `get_random`, `add_tags`, `remove_tag`, `list_tags`, `get_stats`. Per-user bearer token, **stored hashed (SHA-256)** — shown once at signup/rotation, rotatable from the dashboard.
+- **MCP** at `POST /mcp` — 13 tools: `add_entry`, `get_entry`, `update_entry`, `delete_entry`, `get_recent`, `get_by_date_range`, `search_entries`, `get_by_tag`, `get_random`, `add_tags`, `remove_tag`, `list_tags`, `get_stats`.
+- **Two ways to authenticate MCP:**
+  - **OAuth 2.1** (what claude.ai custom connectors use): discovery at `/.well-known/oauth-authorization-server`, dynamic client registration, `/authorize` login page, `/token` with PKCE + refresh-token rotation. Access/refresh tokens stored hashed.
+  - **Personal bearer token** (`jrnl_...`, for Claude Code CLI / scripts): **stored hashed (SHA-256)** — shown once at signup/rotation, rotatable from the dashboard.
 - **Viewer** at `/` — signup/login (email + PBKDF2-hashed password), entry feed, search, tag filters, stats. Sessions are HMAC-signed HTTP-only cookies.
 - **Storage** — D1 (SQLite). Every query scoped `WHERE user_id = ?`.
 
@@ -43,22 +46,34 @@ Live at `https://journal.<your-subdomain>.workers.dev`.
 
 ## Connect to Claude
 
-1. Open your deployed site, sign up — the connect dialog opens with your MCP token. **Copy it now** (it's hashed at rest, never shown again; rotate to get a new one).
-2. Claude → Settings → Connectors → **Add custom connector**.
-3. URL: `https://journal.<your-subdomain>.workers.dev/mcp` · Auth: the bearer token.
+### claude.ai (web / mobile / desktop)
+
+1. Open your deployed site, **sign up** first.
+2. Claude → Settings → Connectors → **Add custom connector** → URL: `https://journal.<your-subdomain>.workers.dev/mcp`. Leave client id/secret **empty** — registration is automatic.
+3. Claude redirects to your journal's authorize page — log in with your journal email/password.
 4. In any chat: *"log this: shipped the journal project today"* — entry lands in your journal.
 
-Token compromised or lost? Dashboard → connect → **rotate token**. Old token dies instantly; update the connector with the new one.
+### Claude Code CLI
+
+Uses your personal `jrnl_` token (shown once at signup, or dashboard → connect → rotate):
+
+```bash
+claude mcp add --transport http journal https://journal.<your-subdomain>.workers.dev/mcp \
+  --scope user --header "Authorization: Bearer jrnl_..."
+```
+
+Token compromised or lost? Dashboard → connect → **rotate token**. Old token dies instantly.
 
 ## Layout
 
 ```
-src/worker/index.js    routing: /mcp, /api/*, static assets
-src/worker/lib/mcp.js  MCP JSON-RPC (stateless Streamable HTTP) + tool definitions
-src/worker/lib/db.js   D1 queries, all user-scoped
-src/worker/lib/auth.js WebCrypto: PBKDF2 passwords, SHA-256 tokens, HMAC sessions
-migrations/            D1 schema
-public/                viewer (vanilla HTML/CSS/JS)
+src/worker/index.js      routing: /mcp, OAuth endpoints, /api/*, static assets
+src/worker/lib/mcp.js    MCP JSON-RPC (stateless Streamable HTTP) + tool definitions
+src/worker/lib/oauth.js  OAuth 2.1: discovery, registration, authorize, token (PKCE)
+src/worker/lib/db.js     D1 queries, all user-scoped
+src/worker/lib/auth.js   WebCrypto: PBKDF2 passwords, SHA-256 tokens, HMAC sessions
+migrations/              D1 schema
+public/                  viewer (vanilla HTML/CSS/JS)
 ```
 
 ## API (session-authenticated, used by the viewer)
