@@ -9,7 +9,7 @@ const PROTOCOL_VERSIONS = ["2025-06-18", "2025-03-26", "2024-11-05"];
 
 // Injected into the agent's context at connector load — the "skill file".
 // Teaches any MCP client what this journal is for and how to use it well.
-const INSTRUCTIONS = `This is the user's personal journal — a long-term record of their life, written by talking to you. Treat it as their legacy, not an app.
+const INSTRUCTIONS = `This is Lapse — the user's personal journal, a long-term record of their life, written by talking to you. Treat it as their legacy, not an app.
 
 ## When to log
 Log proactively whenever the user shares something that happened, a decision, a feeling, a milestone, or says "log this". Don't ask permission for obvious logs — just log and confirm in one short line. One event = one entry; a day recap can be one entry.
@@ -229,7 +229,7 @@ async function handleMessage(DB, userId, msg) {
       return rpcResult(id, {
         protocolVersion: version,
         capabilities: { tools: {}, prompts: {} },
-        serverInfo: { name: "journal", version: "2.1.0" },
+        serverInfo: { name: "lapse", version: "2.1.0" },
         instructions: INSTRUCTIONS,
       });
     }

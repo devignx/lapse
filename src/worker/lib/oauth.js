@@ -108,7 +108,7 @@ function authorizePage(params, { error = "", email = "" } = {}) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Journal — authorize</title>
+  <title>Lapse — authorize</title>
   <style>
     :root { --bg:#fff; --fg:#111; --muted:#777; --line:#e5e5e5; --error:#b3261e; }
     @media (prefers-color-scheme: dark) {

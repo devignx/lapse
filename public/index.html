@@ -1,17 +1,19 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Journal</title>
+  <title>Lapse</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="icon" href="/public/icon.png" type="image/png" />
   <link
     href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Roboto+Flex:opsz,wght@8..144,300..700&display=swap"
-    rel="stylesheet"
-  />
+    rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
+
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
@@ -31,14 +33,17 @@
     <div class="glow" aria-hidden="true"></div>
     <div class="auth-box">
       <svg class="auth-logo" viewBox="0 0 62 60" fill="none" aria-hidden="true">
-        <path d="M44.0724 16.1665C48.8695 11.3694 56.9546 11.3672 59.4736 17.6663C60.1656 19.3967 60.7 21.1954 61.0656 23.0413C62.2335 28.9383 61.6258 35.0524 59.3195 40.6104C57.0131 46.1683 53.1117 50.9206 48.1085 54.2661C43.1053 57.6116 37.2251 59.4002 31.2114 59.4056C25.1977 59.4111 19.3207 57.6331 14.3236 54.2966C9.32643 50.9601 5.43356 46.2149 3.13725 40.6611C0.840947 35.1073 0.244337 28.9943 1.42287 23.0951C1.79308 21.242 2.33324 19.4362 3.03196 17.6988C5.56333 11.4047 13.6471 11.4083 18.4442 16.2054L22.5529 20.3141C27.35 25.1112 35.1277 25.1112 39.9248 20.3141L44.0724 16.1665Z" fill="url(#logo-body)" />
+        <path
+          d="M44.0724 16.1665C48.8695 11.3694 56.9546 11.3672 59.4736 17.6663C60.1656 19.3967 60.7 21.1954 61.0656 23.0413C62.2335 28.9383 61.6258 35.0524 59.3195 40.6104C57.0131 46.1683 53.1117 50.9206 48.1085 54.2661C43.1053 57.6116 37.2251 59.4002 31.2114 59.4056C25.1977 59.4111 19.3207 57.6331 14.3236 54.2966C9.32643 50.9601 5.43356 46.2149 3.13725 40.6611C0.840947 35.1073 0.244337 28.9943 1.42287 23.0951C1.79308 21.242 2.33324 19.4362 3.03196 17.6988C5.56333 11.4047 13.6471 11.4083 18.4442 16.2054L22.5529 20.3141C27.35 25.1112 35.1277 25.1112 39.9248 20.3141L44.0724 16.1665Z"
+          fill="url(#logo-body)" />
         <circle cx="31" cy="9" r="9" fill="url(#logo-dot)" />
       </svg>
-      <h1>journal</h1>
+      <h1>lapse</h1>
       <p class="muted">a log you write by talking to your AI</p>
       <form id="auth-form">
         <input id="email" type="email" placeholder="email" autocomplete="email" required />
-        <input id="password" type="password" placeholder="password (min 8 chars)" autocomplete="current-password" minlength="8" required />
+        <input id="password" type="password" placeholder="password (min 8 chars)" autocomplete="current-password"
+          minlength="8" required />
         <button type="submit" id="auth-submit">Log in</button>
       </form>
       <p class="auth-toggle muted">
@@ -55,35 +60,36 @@
     <header>
       <div class="brand">
         <svg viewBox="0 0 62 60" fill="none" aria-hidden="true">
-          <path d="M44.0724 16.1665C48.8695 11.3694 56.9546 11.3672 59.4736 17.6663C60.1656 19.3967 60.7 21.1954 61.0656 23.0413C62.2335 28.9383 61.6258 35.0524 59.3195 40.6104C57.0131 46.1683 53.1117 50.9206 48.1085 54.2661C43.1053 57.6116 37.2251 59.4002 31.2114 59.4056C25.1977 59.4111 19.3207 57.6331 14.3236 54.2966C9.32643 50.9601 5.43356 46.2149 3.13725 40.6611C0.840947 35.1073 0.244337 28.9943 1.42287 23.0951C1.79308 21.242 2.33324 19.4362 3.03196 17.6988C5.56333 11.4047 13.6471 11.4083 18.4442 16.2054L22.5529 20.3141C27.35 25.1112 35.1277 25.1112 39.9248 20.3141L44.0724 16.1665Z" fill="url(#logo-body)" />
+          <path
+            d="M44.0724 16.1665C48.8695 11.3694 56.9546 11.3672 59.4736 17.6663C60.1656 19.3967 60.7 21.1954 61.0656 23.0413C62.2335 28.9383 61.6258 35.0524 59.3195 40.6104C57.0131 46.1683 53.1117 50.9206 48.1085 54.2661C43.1053 57.6116 37.2251 59.4002 31.2114 59.4056C25.1977 59.4111 19.3207 57.6331 14.3236 54.2966C9.32643 50.9601 5.43356 46.2149 3.13725 40.6611C0.840947 35.1073 0.244337 28.9943 1.42287 23.0951C1.79308 21.242 2.33324 19.4362 3.03196 17.6988C5.56333 11.4047 13.6471 11.4083 18.4442 16.2054L22.5529 20.3141C27.35 25.1112 35.1277 25.1112 39.9248 20.3141L44.0724 16.1665Z"
+            fill="url(#logo-body)" />
           <circle cx="31" cy="9" r="9" fill="url(#logo-dot)" />
         </svg>
-        <h1>Journal</h1>
+        <h1>Lapse</h1>
       </div>
       <div class="account" id="account">
-        <button
-          class="account-trigger"
-          id="account-trigger"
-          aria-haspopup="menu"
-          aria-expanded="false"
-          aria-label="Account menu"
-        >
+        <button class="account-trigger" id="account-trigger" aria-haspopup="menu" aria-expanded="false"
+          aria-label="Account menu">
           <span class="avatar" id="avatar">?</span>
           <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-            <path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
           </svg>
         </button>
         <div class="account-menu" role="menu">
           <p class="account-email muted mono" id="account-email"></p>
           <button role="menuitem" id="menu-settings">
             <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M8 5.2A2.8 2.8 0 1 0 8 10.8 2.8 2.8 0 0 0 8 5.2Zm5.9 2.8a5.9 5.9 0 0 0-.08-.94l1.55-1.2-1.5-2.6-1.83.73a5.9 5.9 0 0 0-1.63-.94L10.1 1.1H7.1l-.31 1.95a5.9 5.9 0 0 0-1.63.94l-1.83-.73-1.5 2.6 1.55 1.2a5.9 5.9 0 0 0 0 1.88l-1.55 1.2 1.5 2.6 1.83-.73c.5.4 1.04.72 1.63.94l.31 1.95h3l.31-1.95a5.9 5.9 0 0 0 1.63-.94l1.83.73 1.5-2.6-1.55-1.2c.05-.31.08-.62.08-.94Z" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" />
+              <path
+                d="M8 5.2A2.8 2.8 0 1 0 8 10.8 2.8 2.8 0 0 0 8 5.2Zm5.9 2.8a5.9 5.9 0 0 0-.08-.94l1.55-1.2-1.5-2.6-1.83.73a5.9 5.9 0 0 0-1.63-.94L10.1 1.1H7.1l-.31 1.95a5.9 5.9 0 0 0-1.63.94l-1.83-.73-1.5 2.6 1.55 1.2a5.9 5.9 0 0 0 0 1.88l-1.55 1.2 1.5 2.6 1.83-.73c.5.4 1.04.72 1.63.94l.31 1.95h3l.31-1.95a5.9 5.9 0 0 0 1.63-.94l1.83.73 1.5-2.6-1.55-1.2c.05-.31.08-.62.08-.94Z"
+                fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" />
             </svg>
             Connections
           </button>
           <button role="menuitem" id="menu-logout">
             <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M6 2H3.5A1.5 1.5 0 0 0 2 3.5v9A1.5 1.5 0 0 0 3.5 14H6M10.5 11 14 8l-3.5-3M14 8H6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M6 2H3.5A1.5 1.5 0 0 0 2 3.5v9A1.5 1.5 0 0 0 3.5 14H6M10.5 11 14 8l-3.5-3M14 8H6" fill="none"
+                stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             Log out
           </button>
@@ -121,4 +127,5 @@
 
   <script src="/app.js"></script>
 </body>
+
 </html>

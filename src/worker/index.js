@@ -66,7 +66,7 @@ export default {
       return oauth.token(request, env.DB);
     }
 
-    // ---------- MCP (bearer: OAuth access token OR personal jrnl_ token) ----------
+    // ---------- MCP (bearer: OAuth access token OR personal lapse_ token) ----------
     if (pathname === "/mcp") {
       if (method !== "POST") return json({ error: "method_not_allowed" }, 405);
       const auth = request.headers.get("Authorization") || "";

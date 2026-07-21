@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Journal — a log you write by talking</title>
+  <title>Lapse — a log you write by talking</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -183,11 +183,11 @@
     <div class="providers">
       <div class="provider">
         <div class="head"><span class="name">Claude — web, mobile, desktop</span><span class="badge">OAuth · no token</span></div>
-        <p>Settings → Connectors → Add custom connector → paste <code class="mcp-url">…/mcp</code>. Leave client id &amp; secret <strong>empty</strong> — registration is automatic. Log in with your journal account when redirected.</p>
+        <p>Settings → Connectors → Add custom connector → paste <code class="mcp-url">…/mcp</code>. Leave client id &amp; secret <strong>empty</strong> — registration is automatic. Log in with your Lapse account when redirected.</p>
       </div>
       <div class="provider">
         <div class="head"><span class="name">Claude Code</span><span class="badge">bearer token</span></div>
-        <p>One command: <code>claude mcp add --transport http journal &lt;url&gt; --header "Authorization: Bearer &lt;token&gt;"</code></p>
+        <p>One command: <code>claude mcp add --transport http lapse &lt;url&gt; --header "Authorization: Bearer &lt;token&gt;"</code></p>
       </div>
       <div class="provider">
         <div class="head"><span class="name">opencode</span><span class="badge">bearer token</span></div>
@@ -203,7 +203,7 @@
   <section id="good-to-know">
     <h2>good to know</h2>
     <ul class="notes">
-      <li><strong>Sign up before authorizing.</strong> The Claude login page checks your journal account.</li>
+      <li><strong>Sign up before authorizing.</strong> The Claude login page checks your Lapse account.</li>
       <li><strong>Tokens are shown once.</strong> They're stored hashed. Lost one? Rotate it in Connections — old token dies instantly, Claude's OAuth link is unaffected.</li>
       <li><strong>Login is rate-limited.</strong> A few wrong passwords per minute — wait 60s if you hit the wall.</li>
       <li><strong>Your entries are yours.</strong> Scoped to your account, invisible to other users. Passwords and tokens never stored in plaintext.</li>

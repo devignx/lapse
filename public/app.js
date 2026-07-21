@@ -295,7 +295,7 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 }
 
-const TOKEN_PLACEHOLDER = "jrnl_YOUR_TOKEN";
+const TOKEN_PLACEHOLDER = "lapse_YOUR_TOKEN";
 
 const PROVIDERS = [
   {
@@ -309,7 +309,7 @@ const PROVIDERS = [
         <li>Paste this URL — leave client id &amp; secret <strong>empty</strong>:
           <div class="copy-row"><code>${esc(url)}</code><button data-copy="${esc(url)}">copy</button></div>
         </li>
-        <li>Claude redirects here — log in with your journal email &amp; password</li>
+        <li>Claude redirects here — log in with your Lapse email &amp; password</li>
         <li>Done. In any chat: <em>“log this: …”</em></li>
       </ol>`,
   },
@@ -319,13 +319,13 @@ const PROVIDERS = [
     auth: "Bearer token",
     usesToken: true,
     render: (url, token) => {
-      const cmd = `claude mcp add --transport http journal ${url} \\\n  --scope user --header "Authorization: Bearer ${token}"`;
+      const cmd = `claude mcp add --transport http lapse ${url} \\\n  --scope user --header "Authorization: Bearer ${token}"`;
       return `
       <ol class="setup-steps">
         <li>Run in your terminal:
           <div class="copy-row"><pre>${esc(cmd)}</pre><button data-copy="${esc(cmd)}">copy</button></div>
         </li>
-        <li>Restart Claude Code — <span class="mono">journal_*</span> tools appear</li>
+        <li>Restart Claude Code — <span class="mono">lapse_*</span> tools appear</li>
       </ol>`;
     },
   },
@@ -335,7 +335,7 @@ const PROVIDERS = [
     auth: "Bearer token",
     usesToken: true,
     render: (url, token) => {
-      const cfg = `{\n  "mcp": {\n    "journal": {\n      "type": "remote",\n      "url": "${url}",\n      "headers": { "Authorization": "Bearer ${token}" },\n      "enabled": true\n    }\n  }\n}`;
+      const cfg = `{\n  "mcp": {\n    "lapse": {\n      "type": "remote",\n      "url": "${url}",\n      "headers": { "Authorization": "Bearer ${token}" },\n      "enabled": true\n    }\n  }\n}`;
       return `
       <ol class="setup-steps">
         <li>Merge into <span class="mono">~/.config/opencode/opencode.json</span>:

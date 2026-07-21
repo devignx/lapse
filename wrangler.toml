@@ -1,3 +1,6 @@
+# Product is "Lapse" (lapse.in). The Worker + D1 keep the internal resource
+# name "journal" — renaming them here creates a NEW empty Worker/DB and orphans
+# the live deployment. Brand lives in the UI + the lapse.in custom domain.
 name = "journal"
 main = "src/worker/index.js"
 compatibility_date = "2025-01-01"

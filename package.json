@@ -1,7 +1,7 @@
 {
-  "name": "journal",
+  "name": "lapse",
   "version": "2.0.0",
-  "description": "Personal journal: MCP server + web viewer on Cloudflare Workers + D1. Talk to Claude, entries land here.",
+  "description": "Lapse — a personal journal your AI writes for you. MCP server + web viewer on Cloudflare Workers + D1. Talk to your AI, entries land here.",
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",

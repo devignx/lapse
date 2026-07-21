@@ -7,7 +7,7 @@ import { hashPassword, verifyPassword, sha256Hex, randomHex } from "./auth.js";
 
 export async function createUser(DB, email, password) {
   const { salt, hash } = await hashPassword(password);
-  const token = "jrnl_" + randomHex(24);
+  const token = "lapse_" + randomHex(24);
   const tokenHash = await sha256Hex(token);
   const res = await DB.prepare(
     "INSERT INTO users (email, password_hash, password_salt, api_token_hash) VALUES (?, ?, ?, ?) RETURNING id, email, created_at"
@@ -36,7 +36,7 @@ export async function getUserByToken(DB, token) {
 }
 
 export async function rotateToken(DB, userId) {
-  const token = "jrnl_" + randomHex(24);
+  const token = "lapse_" + randomHex(24);
   const tokenHash = await sha256Hex(token);
   await DB.prepare("UPDATE users SET api_token_hash = ? WHERE id = ?").bind(tokenHash, userId).run();
   return token; // old token dead immediately
