@@ -40,21 +40,15 @@
       </svg>
       <h1>lapse</h1>
       <p class="muted">a log you write by talking to your AI</p>
-      <form id="auth-form">
+      <form id="magic-form">
         <input id="email" type="email" placeholder="email" autocomplete="email" required />
-        <input id="password" type="password" placeholder="password (min 8 chars)" autocomplete="current-password"
-          minlength="8" required />
-        <button type="submit" id="auth-submit">Log in</button>
+        <button type="submit" id="magic-btn">Email me a login link</button>
       </form>
-      <div class="auth-or"><span>or</span></div>
-      <button type="button" id="magic-btn" class="magic-btn">Email me a login link</button>
+      <p id="auth-hint" class="muted small">No password. We email you a one-time link — same link
+        logs you in or creates your account.</p>
       <p id="magic-sent" class="muted small hidden">
         Check your inbox — a login link is on its way to <span id="magic-email"></span>.
         It expires in 15 minutes.
-      </p>
-      <p class="auth-toggle muted">
-        <span id="auth-toggle-label">No account?</span>
-        <a href="#" id="auth-toggle-link">Sign up</a>
       </p>
       <p id="auth-error" class="error hidden"></p>
       <p class="auth-about"><a href="/home">what is this?</a></p>

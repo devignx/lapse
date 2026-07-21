@@ -3,7 +3,6 @@
 // authorization code + PKCE (S256), refresh token rotation.
 // Public clients only (token_endpoint_auth_method: none) — PKCE is the guard.
 
-import { authenticate } from "./db.js";
 import { sha256Hex, randomHex } from "./auth.js";
 
 const enc = new TextEncoder();
@@ -98,10 +97,7 @@ function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 }
 
-function authorizePage(params, { error = "", email = "" } = {}) {
-  const hidden = ["client_id", "redirect_uri", "code_challenge", "code_challenge_method", "state", "response_type", "scope"]
-    .map((k) => `<input type="hidden" name="${k}" value="${esc(params.get(k))}" />`)
-    .join("\n        ");
+function pageShell(inner) {
   return new Response(
     `<!doctype html>
 <html lang="en">
@@ -128,19 +124,11 @@ function authorizePage(params, { error = "", email = "" } = {}) {
     p.note { color:var(--muted); font-size:.85rem; margin-top:1rem; }
     a { color:var(--fg); }
   </style>
+  <style>.btn2{background:transparent;color:var(--fg)}</style>
 </head>
 <body>
   <div class="box">
-    <h1>Authorize Claude</h1>
-    <p class="sub">Claude wants to read and write your journal. Log in to allow.</p>
-    <form method="POST" action="/authorize">
-        ${hidden}
-      <input name="email" type="email" placeholder="email" value="${esc(email)}" autocomplete="email" required />
-      <input name="password" type="password" placeholder="password" autocomplete="current-password" required />
-      <button type="submit">Log in &amp; authorize</button>
-    </form>
-    ${error ? `<p class="error">${esc(error)}</p>` : ""}
-    <p class="note">No account? <a href="/" target="_blank">Sign up first</a>, then retry from Claude.</p>
+    ${inner}
   </div>
 </body>
 </html>`,
@@ -148,15 +136,44 @@ function authorizePage(params, { error = "", email = "" } = {}) {
   );
 }
 
-export async function authorizeGet(request, DB, url) {
+// Logged in → one-click consent. The form POSTs the OAuth params back to us.
+function consentPage(params, user, client) {
+  const hidden = ["client_id", "redirect_uri", "code_challenge", "code_challenge_method", "state", "response_type", "scope"]
+    .map((k) => `<input type="hidden" name="${k}" value="${esc(params.get(k))}" />`)
+    .join("\n        ");
+  const appName = client.client_name ? esc(client.client_name) : "This app";
+  const cancel = new URL(params.get("redirect_uri"));
+  cancel.searchParams.set("error", "access_denied");
+  if (params.get("state")) cancel.searchParams.set("state", params.get("state"));
+  return pageShell(`
+    <h1>Authorize access</h1>
+    <p class="sub">${appName} wants to read and write your Lapse journal, as <strong>${esc(user.email)}</strong>.</p>
+    <form method="POST" action="/authorize">
+        ${hidden}
+      <button type="submit">Authorize</button>
+    </form>
+    <p class="note"><a href="${esc(cancel.toString())}">Cancel</a> · not you? <a href="/" target="_blank">switch account</a></p>`);
+}
+
+// Not logged in → we can't authorize. Send them to log in, then retry.
+function loginFirstPage(params) {
+  const retry = `/authorize?${params.toString()}`;
+  return pageShell(`
+    <h1>Log in to Lapse</h1>
+    <p class="sub">To connect an AI, first log in to your Lapse account in this browser.</p>
+    <p><a href="/?auth" target="_blank"><button type="button">Open Lapse login</button></a></p>
+    <p class="note">Logged in? <a href="${esc(retry)}">Continue &rarr;</a></p>`);
+}
+
+export async function authorizeGet(request, DB, url, user) {
   const params = url.searchParams;
   const client = await getClient(DB, params.get("client_id"));
   const problem = validateAuthorizeParams(params, client);
   if (problem) return new Response(problem, { status: 400 });
-  return authorizePage(params);
+  return user ? consentPage(params, user, client) : loginFirstPage(params);
 }
 
-export async function authorizePost(request, DB) {
+export async function authorizePost(request, DB, user) {
   const form = await request.formData();
   const params = new URLSearchParams();
   for (const [k, v] of form) params.set(k, v);
@@ -165,8 +182,8 @@ export async function authorizePost(request, DB) {
   const problem = validateAuthorizeParams(params, client);
   if (problem) return new Response(problem, { status: 400 });
 
-  const user = await authenticate(DB, params.get("email") || "", params.get("password") || "");
-  if (!user) return authorizePage(params, { error: "Wrong email or password.", email: params.get("email") });
+  // Consent is only valid for a logged-in session — this is where the email gate holds.
+  if (!user) return loginFirstPage(params);
 
   const code = randomHex(32);
   await DB.prepare(

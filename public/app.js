@@ -39,57 +39,21 @@ function showAuth() {
   $("app").classList.add("hidden");
 }
 
-function setAuthMode(mode) {
-  state.mode = mode;
-  $("auth-submit").textContent = mode === "login" ? "Log in" : "Sign up";
-  $("auth-toggle-label").textContent = mode === "login" ? "No account?" : "Have an account?";
-  $("auth-toggle-link").textContent = mode === "login" ? "Sign up" : "Log in";
-  $("password").autocomplete = mode === "login" ? "current-password" : "new-password";
-  $("auth-error").classList.add("hidden");
-}
-
-$("auth-toggle-link").addEventListener("click", (e) => {
-  e.preventDefault();
-  setAuthMode(state.mode === "login" ? "signup" : "login");
-});
-
-$("auth-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const body = JSON.stringify({ email: $("email").value, password: $("password").value });
-  try {
-    const res = await api(state.mode === "login" ? "/api/login" : "/api/signup", {
-      method: "POST",
-      body,
-    });
-    if (res.mcp_token) state.freshToken = res.mcp_token; // shown once — keep for this page load
-    await enterApp();
-    if (state.freshToken) openSettings(); // new signup: surface the connection setup immediately
-  } catch (err) {
-    const messages = {
-      invalid_credentials: "Wrong email or password.",
-      email_taken: "That email already has an account.",
-      password_too_short: "Password needs at least 8 characters.",
-      invalid_email: "That doesn't look like an email.",
-      rate_limited: "Too many attempts — wait a minute, then retry.",
-    };
-    showAuthError(messages[err.message] || "Something went wrong. Try again.");
-  }
-});
-
 function showAuthError(text) {
   const el = $("auth-error");
   el.textContent = text;
   el.classList.remove("hidden");
 }
 
-// ---------- magic link ----------
+// ---------- magic-link login (the only way in) ----------
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-$("magic-btn").addEventListener("click", async () => {
+$("magic-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
   const email = $("email").value.trim();
   if (!EMAIL_RE.test(email)) {
-    showAuthError("Enter your email above first.");
+    showAuthError("Enter a valid email.");
     return;
   }
   $("magic-btn").disabled = true;
@@ -98,9 +62,8 @@ $("magic-btn").addEventListener("click", async () => {
     $("magic-email").textContent = email;
     $("magic-sent").classList.remove("hidden");
     $("auth-error").classList.add("hidden");
-    $("auth-form").classList.add("hidden");
-    $("magic-btn").classList.add("hidden");
-    document.querySelector(".auth-or")?.classList.add("hidden");
+    $("magic-form").classList.add("hidden");
+    $("auth-hint").classList.add("hidden");
   } catch (err) {
     $("magic-btn").disabled = false;
     showAuthError(
@@ -647,7 +610,6 @@ async function enterApp() {
       showAuth();
       showAuthError("That login link expired or was already used. Request a new one.");
     } else if (params.has("auth") || params.has("signup")) {
-      if (params.has("signup")) setAuthMode("signup");
       showAuth();
     } else {
       location.replace("/home");

@@ -172,7 +172,7 @@
   <section id="how">
     <h2>how it works</h2>
     <div class="steps">
-      <div class="step"><span class="n">01</span><div><strong>Create an account</strong><p>One email, one password. Sign up first — connecting an AI needs your account to exist.</p></div></div>
+      <div class="step"><span class="n">01</span><div><strong>Sign in with your email</strong><p>No password. We email you a one-time link — the same link logs you in or creates your account. Do this first; connecting an AI needs your account to exist.</p></div></div>
       <div class="step"><span class="n">02</span><div><strong>Connect your AI</strong><p>Claude, Claude Code, opencode, or any MCP client. Takes one URL or one command.</p></div></div>
       <div class="step"><span class="n">03</span><div><strong>Just talk</strong><p>“log this: shipped the project today.” Saved in your own words, timestamped, tagged. Read it back here anytime.</p></div></div>
     </div>
@@ -183,7 +183,7 @@
     <div class="providers">
       <div class="provider">
         <div class="head"><span class="name">Claude — web, mobile, desktop</span><span class="badge">OAuth · no token</span></div>
-        <p>Settings → Connectors → Add custom connector → paste <code class="mcp-url">…/mcp</code>. Leave client id &amp; secret <strong>empty</strong> — registration is automatic. Log in with your Lapse account when redirected.</p>
+        <p>Settings → Connectors → Add custom connector → paste <code class="mcp-url">…/mcp</code>. Leave client id &amp; secret <strong>empty</strong> — registration is automatic. If you're signed into Lapse in that browser, it's a one-click Authorize.</p>
       </div>
       <div class="provider">
         <div class="head"><span class="name">Claude Code</span><span class="badge">bearer token</span></div>
@@ -203,10 +203,10 @@
   <section id="good-to-know">
     <h2>good to know</h2>
     <ul class="notes">
-      <li><strong>Sign up before authorizing.</strong> The Claude login page checks your Lapse account.</li>
+      <li><strong>Sign in before connecting.</strong> Do the whole connect in one browser where you're logged into Lapse — the authorize step uses that session.</li>
       <li><strong>Tokens are shown once.</strong> They're stored hashed. Lost one? Rotate it in Connections — old token dies instantly, Claude's OAuth link is unaffected.</li>
-      <li><strong>Login is rate-limited.</strong> A few wrong passwords per minute — wait 60s if you hit the wall.</li>
-      <li><strong>Your entries are yours.</strong> Scoped to your account, invisible to other users. Passwords and tokens never stored in plaintext.</li>
+      <li><strong>Login links expire fast.</strong> Each is single-use and lasts 15 minutes — request a fresh one if it lapses.</li>
+      <li><strong>Your entries are yours.</strong> Scoped to your account, invisible to other users. Tokens never stored in plaintext.</li>
       <li><strong>Deleting asks first.</strong> Agents are instructed to confirm before any delete.</li>
     </ul>
   </section>

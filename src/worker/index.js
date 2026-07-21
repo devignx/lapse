@@ -54,11 +54,9 @@ export default {
       return oauth.protectedResourceMetadata(url.origin);
     if (pathname === "/register" && method === "POST") return oauth.register(request, env.DB);
     if (pathname === "/authorize" && method === "GET")
-      return oauth.authorizeGet(request, env.DB, url);
-    if (pathname === "/authorize" && method === "POST") {
-      if (await ipLimited(env.AUTH_LIMITER, request)) return rateLimitPage();
-      return oauth.authorizePost(request, env.DB);
-    }
+      return oauth.authorizeGet(request, env.DB, url, await sessionUser(request, env));
+    if (pathname === "/authorize" && method === "POST")
+      return oauth.authorizePost(request, env.DB, await sessionUser(request, env));
     if (pathname === "/token" && method === "POST") {
       if (await ipLimited(env.TOKEN_LIMITER, request))
         return json({ error: "rate_limited", error_description: "Too many requests" }, 429, {
@@ -95,34 +93,7 @@ export default {
     }
 
     // ---------- auth API ----------
-    if (pathname === "/api/signup" && method === "POST") {
-      if (await ipLimited(env.AUTH_LIMITER, request))
-        return json({ error: "rate_limited" }, 429, { "Retry-After": "60" });
-      const { email, password } = await request.json().catch(() => ({}));
-      if (!EMAIL_RE.test(email || "")) return json({ error: "invalid_email" }, 400);
-      if (!password || password.length < 8)
-        return json({ error: "password_too_short", detail: "Minimum 8 characters" }, 400);
-      try {
-        const { user, token } = await store.createUser(env.DB, email, password);
-        return json(
-          { id: user.id, email: user.email, mcp_token: token }, // token shown once
-          200,
-          await sessionHeaders(env, user.id, url)
-        );
-      } catch (err) {
-        if (String(err).includes("UNIQUE")) return json({ error: "email_taken" }, 409);
-        throw err;
-      }
-    }
-
-    if (pathname === "/api/login" && method === "POST") {
-      if (await ipLimited(env.AUTH_LIMITER, request))
-        return json({ error: "rate_limited" }, 429, { "Retry-After": "60" });
-      const { email, password } = await request.json().catch(() => ({}));
-      const user = await store.authenticate(env.DB, email || "", password || "");
-      if (!user) return json({ error: "invalid_credentials" }, 401);
-      return json({ id: user.id, email: user.email }, 200, await sessionHeaders(env, user.id, url));
-    }
+    // No password signup/login — the email gate is magic-link only (below).
 
     if (pathname === "/api/logout" && method === "POST") {
       return json({ ok: true }, 200, { "Set-Cookie": sessionSetCookieHeader("", { clear: true }) });
