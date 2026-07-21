@@ -46,6 +46,12 @@
           minlength="8" required />
         <button type="submit" id="auth-submit">Log in</button>
       </form>
+      <div class="auth-or"><span>or</span></div>
+      <button type="button" id="magic-btn" class="magic-btn">Email me a login link</button>
+      <p id="magic-sent" class="muted small hidden">
+        Check your inbox — a login link is on its way to <span id="magic-email"></span>.
+        It expires in 15 minutes.
+      </p>
       <p class="auth-toggle muted">
         <span id="auth-toggle-label">No account?</span>
         <a href="#" id="auth-toggle-link">Sign up</a>

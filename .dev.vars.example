@@ -1,0 +1,7 @@
+# Copy to .dev.vars for local `wrangler dev` (gitignored)
+SESSION_SECRET=dev-secret-change-me
+
+# Magic-link email (optional locally — without a key, the link is logged to the
+# console instead of sent). In production set via `wrangler secret put`.
+# RESEND_API_KEY=re_xxxxxxxx
+# MAIL_FROM=Lapse <login@lapse.in>

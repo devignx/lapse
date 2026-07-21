@@ -41,6 +41,46 @@ export async function getUserByToken(DB, token) {
   return DB.prepare("SELECT id, email FROM users WHERE api_token_hash = ?").bind(tokenHash).first();
 }
 
+export async function getUserByEmail(DB, email) {
+  return DB.prepare("SELECT id, email FROM users WHERE email = ?")
+    .bind(email.toLowerCase().trim())
+    .first();
+}
+
+// Magic-link login doubles as signup: unknown email → new account with a
+// random (unusable) password. The user logs in only via links until they set one.
+export async function findOrCreateUserByEmail(DB, email) {
+  const existing = await getUserByEmail(DB, email);
+  if (existing) return existing;
+  const { user } = await createUser(DB, email, "unused_" + randomHex(24));
+  return user;
+}
+
+// ---------- magic links ----------
+
+export async function createMagicLink(DB, email) {
+  const token = randomHex(32);
+  const tokenHash = await sha256Hex(token);
+  await DB.prepare(
+    "INSERT INTO magic_links (token_hash, email, expires_at) VALUES (?, ?, ?)"
+  )
+    .bind(tokenHash, email.toLowerCase().trim(), Date.now() + 15 * 60 * 1000)
+    .run();
+  await DB.prepare("DELETE FROM magic_links WHERE expires_at < ?").bind(Date.now()).run();
+  return token; // plaintext, emailed once
+}
+
+// Verify + burn (single-use). Returns the email on success, else null.
+export async function consumeMagicLink(DB, token) {
+  const tokenHash = await sha256Hex(token);
+  const row = await DB.prepare("SELECT * FROM magic_links WHERE token_hash = ?")
+    .bind(tokenHash)
+    .first();
+  if (row) await DB.prepare("DELETE FROM magic_links WHERE token_hash = ?").bind(tokenHash).run();
+  if (!row || row.used || row.expires_at < Date.now()) return null;
+  return row.email;
+}
+
 export async function rotateToken(DB, userId) {
   const token = "lapse_" + randomHex(24);
   const tokenHash = await sha256Hex(token);

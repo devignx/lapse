@@ -16,7 +16,8 @@ You read your journal ──email/password login──────────�
 - **Two ways to authenticate MCP:**
   - **OAuth 2.1** (what claude.ai custom connectors use): discovery at `/.well-known/oauth-authorization-server`, dynamic client registration, `/authorize` login page, `/token` with PKCE + refresh-token rotation. Access/refresh tokens stored hashed.
   - **Personal bearer token** (`lapse_...`, for Claude Code CLI / opencode / scripts): **stored hashed (SHA-256)** — shown once at signup/rotation, rotatable from the dashboard.
-- **Viewer** at `/` — signup/login (email + PBKDF2-hashed password), date-grouped feed, search, tag filter, sort, stats. `/home` is the public landing page. Sessions are HMAC-signed HTTP-only cookies.
+- **Viewer** at `/` — email + PBKDF2-password login **or** passwordless magic-link login (`/api/magic/request` → emailed one-time link → `/magic?token=`), date-grouped feed, search, tag filter, sort, stats. `/home` is the public landing page. Sessions are HMAC-signed HTTP-only cookies.
+- **Spaces** — entries live in named spaces (Journal, Career, …), switched from the header. Agent manages them over MCP; the web app has the switcher + create/delete.
 - **Storage** — D1 (SQLite). Every query scoped `WHERE user_id = ?`.
 - **Rate limiting** — Workers native binding, per-IP: 5/min on password endpoints (login, signup, authorize), 20/min on `/token`. 429 + `Retry-After: 60` when exceeded.
 
@@ -42,6 +43,19 @@ npm run db:migrate:remote
 npx wrangler secret put SESSION_SECRET   # paste output of: openssl rand -hex 32
 npm run deploy
 ```
+
+### Magic-link email (Resend)
+
+Magic-link login needs an email sender. All link logic is in-house; Resend is just the transport.
+
+1. Create a [Resend](https://resend.com) account, verify **lapse.in** as a domain (add the SPF/DKIM DNS records it gives you).
+2. Create an API key, then:
+   ```bash
+   npx wrangler secret put RESEND_API_KEY    # paste re_...
+   npx wrangler secret put MAIL_FROM         # e.g. Lapse <login@lapse.in>
+   ```
+
+Without `RESEND_API_KEY` the request endpoint still returns 200 but logs the link to the Worker console instead of sending — fine for local dev, not for production. Password login works regardless.
 
 ### Custom domain (lapse.in)
 

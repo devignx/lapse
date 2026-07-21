@@ -1,6 +1,7 @@
 import * as store from "./lib/db.js";
 import * as oauth from "./lib/oauth.js";
 import { handleMcp } from "./lib/mcp.js";
+import { sendMagicLink } from "./lib/email.js";
 import {
   createSessionCookieValue,
   parseSessionCookieValue,
@@ -125,6 +126,32 @@ export default {
 
     if (pathname === "/api/logout" && method === "POST") {
       return json({ ok: true }, 200, { "Set-Cookie": sessionSetCookieHeader("", { clear: true }) });
+    }
+
+    // ---------- magic-link login (passwordless; doubles as signup) ----------
+    if (pathname === "/api/magic/request" && method === "POST") {
+      if (await ipLimited(env.AUTH_LIMITER, request))
+        return json({ error: "rate_limited" }, 429, { "Retry-After": "60" });
+      const { email } = await request.json().catch(() => ({}));
+      if (!EMAIL_RE.test(email || "")) return json({ error: "invalid_email" }, 400);
+      const token = await store.createMagicLink(env.DB, email);
+      const link = `${url.origin}/magic?token=${token}`;
+      try {
+        await sendMagicLink(env, email.toLowerCase().trim(), link);
+      } catch (err) {
+        console.error("magic send failed:", err.message);
+        return json({ error: "send_failed" }, 502);
+      }
+      return json({ ok: true }); // never reveals whether the email had an account
+    }
+
+    if (pathname === "/magic" && method === "GET") {
+      const token = url.searchParams.get("token");
+      const email = token && (await store.consumeMagicLink(env.DB, token));
+      if (!email) return Response.redirect(`${url.origin}/?magic=invalid`, 302);
+      const user = await store.findOrCreateUserByEmail(env.DB, email);
+      const headers = await sessionHeaders(env, user.id, url);
+      return new Response(null, { status: 302, headers: { Location: `${url.origin}/`, ...headers } });
     }
 
     // ---------- session-authed API ----------

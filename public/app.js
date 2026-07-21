@@ -72,9 +72,44 @@ $("auth-form").addEventListener("submit", async (e) => {
       invalid_email: "That doesn't look like an email.",
       rate_limited: "Too many attempts — wait a minute, then retry.",
     };
-    const el = $("auth-error");
-    el.textContent = messages[err.message] || "Something went wrong. Try again.";
-    el.classList.remove("hidden");
+    showAuthError(messages[err.message] || "Something went wrong. Try again.");
+  }
+});
+
+function showAuthError(text) {
+  const el = $("auth-error");
+  el.textContent = text;
+  el.classList.remove("hidden");
+}
+
+// ---------- magic link ----------
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+$("magic-btn").addEventListener("click", async () => {
+  const email = $("email").value.trim();
+  if (!EMAIL_RE.test(email)) {
+    showAuthError("Enter your email above first.");
+    return;
+  }
+  $("magic-btn").disabled = true;
+  try {
+    await api("/api/magic/request", { method: "POST", body: JSON.stringify({ email }) });
+    $("magic-email").textContent = email;
+    $("magic-sent").classList.remove("hidden");
+    $("auth-error").classList.add("hidden");
+    $("auth-form").classList.add("hidden");
+    $("magic-btn").classList.add("hidden");
+    document.querySelector(".auth-or")?.classList.add("hidden");
+  } catch (err) {
+    $("magic-btn").disabled = false;
+    showAuthError(
+      err.message === "rate_limited"
+        ? "Too many attempts — wait a minute, then retry."
+        : err.message === "send_failed"
+          ? "Couldn't send the email just now. Try again shortly."
+          : "That doesn't look like an email."
+    );
   }
 });
 
@@ -589,6 +624,8 @@ $("settings-close").addEventListener("click", () => $("settings").close());
 
 async function enterApp() {
   state.me = await api("/api/me");
+  // Drop any ?auth / ?signup / ?magic param once we're in — it's stale now.
+  if (location.search) history.replaceState(null, "", location.pathname);
   $("auth").classList.add("hidden");
   $("app").classList.remove("hidden");
   $("avatar").textContent = state.me.email[0];
@@ -606,7 +643,10 @@ async function enterApp() {
     // form when the visitor explicitly came to log in / sign up (?auth / ?signup),
     // so the /home SIGN UP button doesn't bounce back into a redirect loop.
     const params = new URLSearchParams(location.search);
-    if (params.has("auth") || params.has("signup")) {
+    if (params.get("magic") === "invalid") {
+      showAuth();
+      showAuthError("That login link expired or was already used. Request a new one.");
+    } else if (params.has("auth") || params.has("signup")) {
       if (params.has("signup")) setAuthMode("signup");
       showAuth();
     } else {
