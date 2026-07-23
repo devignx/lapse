@@ -1125,14 +1125,18 @@ dialog::backdrop {
   }
 }
 
+/* min-width:0 all the way down: grid/flex items default to min-width:auto,
+   which lets long code blocks stretch the modal instead of scrolling inside it. */
 .setup-steps {
   display: grid;
   gap: 0.85rem;
+  min-width: 0;
 }
 
 .setup-steps li {
   margin-left: 1.2rem;
   font-size: 0.92rem;
+  min-width: 0;
 }
 
 .setup-steps li::marker {
@@ -1146,6 +1150,7 @@ dialog::backdrop {
   display: grid;
   gap: 0.5rem;
   margin: 0.5rem 0 0;
+  min-width: 0;
 }
 
 .setup-steps ul li {
@@ -1153,6 +1158,7 @@ dialog::backdrop {
   padding-left: 0.9rem;
   position: relative;
   color: var(--muted);
+  min-width: 0;
 }
 
 .setup-steps ul li::before {
@@ -1178,6 +1184,7 @@ dialog::backdrop {
   gap: 0.5rem;
   align-items: stretch;
   margin: 0.4rem 0;
+  min-width: 0;
 }
 
 .copy-row code,
@@ -1234,12 +1241,24 @@ dialog::backdrop {
     flex: 1;
     width: auto;
   }
+}
 
+/* stack code + copy button at the same breakpoint the modal stacks at */
+@media (max-width: 640px) {
   .copy-row {
     flex-direction: column;
   }
 
   .copy-row button {
     align-self: flex-start;
+  }
+
+  #settings {
+    padding: 1.15rem;
+    max-height: 90vh;
+  }
+
+  .setup-steps li {
+    font-size: 0.88rem;
   }
 }

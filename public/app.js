@@ -781,13 +781,13 @@ const PROVIDERS = [
             </li>
             <li>Request Body <strong>JSON</strong>:
               <span class="mono">content</span> = Dictated Text ·
-              <span class="mono">tags</span> = Ask Claude's output ·
+              <span class="mono">tags</span> = the tags from step 2 ·
               <span class="mono">space</span> = e.g. “From iPhone” (both optional)</li>
           </ul>
         </li>
         <li>Trigger from the Home Screen, Action Button, or “Hey Siri, log to Lapse”.</li>
       </ol>
-      <p class="token-note">Plain capture endpoint (not MCP) — same bearer token, easiest for Shortcuts, share-sheet, or any device that can POST JSON. The Ask Claude step is optional; <span class="mono">tags</span> accepts a comma-separated string.</p>`;
+      <p class="token-note">Plain capture endpoint (not MCP) — same bearer token, easiest for Shortcuts, share-sheet, or any device that can POST JSON. Step 2 is optional; <span class="mono">tags</span> accepts a comma-separated string.</p>`;
     },
   },
   {
